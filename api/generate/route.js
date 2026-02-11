@@ -1,27 +1,29 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+export async function POST(req) {
 
-export default async function handler(req, res){
+  const {name, country, details} = await req.json();
 
-  const {name, country, details} = req.body;
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+  });
 
   const prompt = `
 Ты юрист в стране ${country}.
-Напиши официальную жалобу в полицию на соседей за ночной шум.
+Напиши официальную жалобу на соседей за ночной шум.
 
 От имени: ${name}
 Описание: ${details}
 
-Формальный юридический стиль.
+Формальный стиль.
 `;
 
   const completion = await openai.chat.completions.create({
-    model:"gpt-4.1-mini",
-    messages:[{role:"user",content:prompt}]
+    model: "gpt-4.1-mini",
+    messages: [{role:"user",content:prompt}]
   });
 
-  res.json({text:completion.choices[0].message.content});
+  return Response.json({
+    text: completion.choices[0].message.content
+  });
 }

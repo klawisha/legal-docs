@@ -3,28 +3,33 @@ import pdfFonts from "pdfmake/build/vfs_fonts.js";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-export default async function handler(req,res){
+export async function GET(req){
 
-  const token = req.query.token;
-  if(!token) return res.status(400).send("no token");
+  const {searchParams} = new URL(req.url);
+  const token = searchParams.get("token");
+
+  if(!token) return new Response("no token",{status:400});
 
   const text = decodeURIComponent(escape(Buffer.from(token,'base64').toString()));
 
-  const docDefinition = {
+  const docDefinition={
     content:[
       {text:"ОФИЦИАЛЬНЫЙ ДОКУМЕНТ",style:"header"},
       text
     ],
-    styles:{
-      header:{fontSize:16,bold:true,margin:[0,0,0,20]}
-    }
+    styles:{header:{fontSize:16,bold:true}}
   };
 
-  const pdf = pdfMake.createPdf(docDefinition);
+  const pdf=pdfMake.createPdf(docDefinition);
 
-  pdf.getBuffer((buffer)=>{
-    res.setHeader("Content-Type","application/pdf");
-    res.setHeader("Content-Disposition","attachment; filename=document.pdf");
-    res.send(buffer);
+  return new Promise(resolve=>{
+    pdf.getBuffer(buffer=>{
+      resolve(new Response(buffer,{
+        headers:{
+          "Content-Type":"application/pdf",
+          "Content-Disposition":"attachment; filename=document.pdf"
+        }
+      }));
+    });
   });
 }

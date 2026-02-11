@@ -1,30 +1,27 @@
-import pdfMake from "pdfmake/build/pdfmake.js";
-import pdfFonts from "pdfmake/build/vfs_fonts.js";
+import OpenAI from "openai";
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
-export default async function handler(req,res){
+export default async function handler(req, res){
 
-  const token = req.query.token;
-  if(!token) return res.status(400).send("no token");
+  const {name, country, details} = req.body;
 
-  const text = decodeURIComponent(escape(Buffer.from(token,'base64').toString()));
+  const prompt = `
+Ты юрист в стране ${country}.
+Напиши официальную жалобу в полицию на соседей за ночной шум.
 
-  const docDefinition = {
-    content:[
-      {text:"ОФИЦИАЛЬНЫЙ ДОКУМЕНТ",style:"header"},
-      text
-    ],
-    styles:{
-      header:{fontSize:16,bold:true,margin:[0,0,0,20]}
-    }
-  };
+От имени: ${name}
+Описание: ${details}
 
-  const pdf = pdfMake.createPdf(docDefinition);
+Формальный юридический стиль.
+`;
 
-  pdf.getBuffer((buffer)=>{
-    res.setHeader("Content-Type","application/pdf");
-    res.setHeader("Content-Disposition","attachment; filename=document.pdf");
-    res.send(buffer);
+  const completion = await openai.chat.completions.create({
+    model:"gpt-4.1-mini",
+    messages:[{role:"user",content:prompt}]
   });
+
+  res.json({text:completion.choices[0].message.content});
 }
