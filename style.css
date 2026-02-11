@@ -1,0 +1,33 @@
+body {
+  background:#f1f3f5;
+  font-family:Arial;
+}
+
+.container {
+  max-width:700px;
+  margin:40px auto;
+  background:white;
+  padding:20px;
+  border-radius:12px;
+}
+
+input,textarea{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+}
+
+button{
+  background:black;
+  color:white;
+  border:none;
+  padding:12px;
+  margin-top:10px;
+  cursor:pointer;
+}
+
+pre{
+  background:#fafafa;
+  padding:15px;
+  white-space:pre-wrap;
+}
