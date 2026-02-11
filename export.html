@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Готовим документ...</h2>
+
+<script>
+const token = localStorage.getItem("doc_token");
+
+if(!token){
+  document.body.innerHTML="Ошибка оплаты";
+}else{
+  window.location.href="/api/export?token="+encodeURIComponent(token);
+}
+</script>
+</body>
+</html>
