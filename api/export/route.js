@@ -20,7 +20,7 @@ export async function GET(req){
     styles:{header:{fontSize:16,bold:true}}
   };
 
-  const pdf=pdfMake.createPdf(docDefinition);
+  const pdf = pdfMake.createPdf(docDefinition);
 
   return new Promise(resolve=>{
     pdf.getBuffer(buffer=>{
